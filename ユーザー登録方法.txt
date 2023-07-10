@@ -1,0 +1,116 @@
+ユーザー管理機能の実装方法
+
+
+まずはdeviseのジェムを入れるためにジェムファイルにgem 'devise'といれる
+
+bundle installをする
+rails g devise:installをする
+
+
+モデルを作成する
+rails g devise userをする
+なぜいつものモデル作成みたいにrails g model userじゃダメなのか？
+これだとdeviseで管理できずにログイン機能が自動生成されないから
+rails g devise userにすることによって
+Userモデルと一緒にdeviseによるログイン機能が自動生成されるし
+ログイン機能に関するルーティングも自動生成される
+
+
+テーブルの作成
+マイグレーションファイルを使う
+Eメールとパスワードはデフォルトで入ってるのでそのまま使う
+:emailと:encrypted_passwordというカラム名が使われてるのでそのまま
+rails db:migrateをしてテーブルを作成
+
+データベース確認ツールでuserテーブルがあれば前準備は完了
+
+
+　　　　　　超重要（アクション名と意味を理解する）
+新規登録とログインのためのリンク設定
+新規登録＝registrations(レジストレーションズ)
+registrationsのディレクトリィにある
+registrations#new（ユーザー登録ページへのパス）
+registrations#create（ユーザー登録の処理）
+registrations#destroy（ユーザーの削除の処理）
+テーブルにデータが保存される
+ユーザー削除をしない限りユーザーは存在する
+
+ログイン＝sessions
+sessionsのディレクトリィにある
+sessions#new(ユーザーログインページへのパス)
+sessions#create(ユーザーログインの処理)
+sessions#destroy(ユーザーログアウトの処理)
+テーブルには情報は保存されない
+sessionという情報が、一時的保持される
+
+
+
+新規登録とログインのためのビューファイルの作成
+rails g devise:viewsでdeviseで導入したユーザー管理機能に、
+必要なビューファイルが自動生成される
+
+
+ログインしてる時とそうでないときで表示を違うようにする
+<% if user_signed_in? %>
+ ログインしてます
+ <%= link_to "ログアウト", destroy_user_session_path, method: :delete%>
+<% else %>
+ <%= link_to "新規登録", new_user_registration_path%>
+ <%= link_to "ログイン", new_user_session_path%>
+<% end %>
+
+
+イフのヘルパーメソッドを使う
+ログアウトのとこだけdeleteのメソッドオプションがついてるのは
+デフォルトでGETメソッドを使うようになってるからGET以外の場合は
+メソッドオプションを入れてあげる必要がある
+
+
+
+
+カラムの追加
+
+
+
+マイグレーションファイルを修正する
+rails db:migrate:statusをして変更するファイルがUPかdownか確認する
+UPは修正不可でdownが修正可
+rails db:rollbackをする
+もう一度rails db:migrate:statusをして変更するファイルがUPかdownか確認する
+修正したいファイルがdownになってるのを確認してから修正する
+修正したらrails db:migreteをしてUPに戻す
+rails db:migrate:statusをしてUPになってるか確認する
+
+もう一つの方法
+rails g migration AddNamesToUsers first_name:string last_name:string
+↑の記述をすればfirst_name:string last_nameのカラムを一撃で設定できる
+AddNameは好きな単語でいい
+
+
+
+
+新規登録画面の編集
+rails g devise:viewsで作成したビューファイルには、
+新たに追加したカラムのための入力欄は存在しないので、
+手作業で追加する必要がある
+
+バリデーションの設定
+ユーザーモデルに記述する
+validates :nickname, presence: true
+↑の記述だとニックネームのカラムが存在しないと保存できないというバリデーション
+
+
+コントローラーの修正
+カラムを追加した場合は、
+application_controller.rbに追加したカラムについて、
+情報を追記する必要がある
+  before_action :configure_permitted_parameters, if: :devise_controller?
+
+  private
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:追加したカラム名])
+  end
+
+追加したカラム名を入れてこのコードを入れる
+このコードはデフォルトであるカラム以外の、追加したカラムのデータを保存した場合につかう
+複数ある場合はkeysのなかに[:~~, :~~~, :~~~]といれていく

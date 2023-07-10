@@ -1,0 +1,43 @@
+まずは怪しい部分にbinding.pryをかける
+（↓では１２行目にかけてる）
+
+１行づつプログラムを打っていく
+
+falseがでたら保存してるインスタンス変数にvalid?をかける
+（↓では@prototype.valid?）
+
+そこでfalseがでたら「インスタンス変数.errors.full_messages」と打つ
+（↓だと@prototype.errors.full_messages）
+
+ROOLBACKの原因のエラー文が出る
+（↓では["Users must exist"]）
+
+
+
+From: /home/fujimoto/projects/protospace-39347/app/controllers/prototypes_controller.rb:12 PrototypesController#create:
+
+    10: def create
+    11:   @prototype = Prototype.new(prototype_params)
+ => 12:   binding.pry
+    13: if @prototype.save
+    14:   redirect_to root_path
+    15: else
+    16:   render :new
+    17: end
+    18: end
+
+[1] pry(#<PrototypesController>)> @prototype.save
+   (0.2ms)  BEGIN
+  ↳ (pry):1:in `create'
+   (0.2ms)  ROLLBACK
+  ↳ (pry):1:in `create'
+=> false
+[2] pry(#<PrototypesController>)> @prototype.valid?
+=> false
+[3] pry(#<PrototypesController>)> @prototype.errors.full_messeges
+NoMethodError: undefined method `full_messeges' for #<ActiveModel::Errors:0x00007fe30da4e460>
+Did you mean?  full_messages
+               full_message
+from (pry):3:in `create'
+[4] pry(#<PrototypesController>)> @prototype.errors.full_messages
+=> ["Users must exist"]

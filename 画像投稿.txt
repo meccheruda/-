@@ -1,0 +1,63 @@
+Active Storage　　アクティブストレージ
+ファイルアップロード機能を簡単に実装できるGem
+
+
+ImageMagick　　　イメージマジック
+コマンドラインから画像に処理を加えることができるツール
+ImageMagickはGemではなく、ソフトウェアなので、
+Homebrewからインストール
+GemではないImageMagickをRubyやRailsで扱うには、MiniMagickというGemが必要
+
+MiniMagick　　ミニマジック
+ImageMagickの機能をRubyで扱えるようにしてくれるGemです。
+RailsでImageMagickを扱うために必要
+
+
+
+ImageProcessing　　イメージプロセッシング
+MiniMagickでは提供できない、画像サイズを調整する機能を提供するGem
+
+
+使い方はターミナルに
+brew install imagemagick
+
+gemファイルに↓を記述
+
+gem 'mini_magick'
+gem 'image_processing', '~> 1.2'
+
+bundle install
+
+rails active_storage:install
+
+rails db:migrate
+
+
+
+
+
+
+has_one_attachedメソッド　　ハズ ワン アタッチド
+各レコードとファイルを1対1の関係で紐づけるメソッド
+モデルに　　 has_one_attached :ファイル名（image）
+そのあとにストロングパラメーターのパーミットに定義する（:image）
+
+
+
+image_tag   イメージ タグメソッド
+img要素を生成するRailsのヘルパーメソッド
+# ファイルをモデルから指定する場合
+<%= image_tag モデル.画像ファイル %>
+<%= image_tag user.avatar %>
+
+# app/assets/ディレクトリ下の画像ファイルパスでも指定できる
+<%= image_tag 画像ファイルのパス %>
+<%= image_tag "avatar.png" %>
+
+
+variant   バリアントメソッド
+variantメソッドを使用することで、ファイルの表示サイズを指定できます
+
+attached?   アタッチドメソッド
+レコードにファイルが添付されているかどうかで、trueかfalseを返すメソッド
+

@@ -1,0 +1,36 @@
+ssh接続をするとき(EC2)
+
+ssh接続は、一定時間操作をせずにいるとタイムアウトしてしまいます。その場合は、「ssh -i 〜」のコマンドを再度実行することでサーバーに接続できます。
+ 「ssh -i 〜」のコマンドは頻繁に使うので、メモアプリなどに控えておきましょう。
+
+
+
+cd .sshでディレクトリを移動して
+↓このコマンドを打ってyesと打つ
+ssh -i tech_camp.pem ec2-user@52.195.88.227
+
+
+DATABASE_PASSWORD='データベースのrootユーザーのパスワード'
+パスワード1115
+0から始まるパスワードはNGだったため
+
+
+
+MariaDBを起動するには、
+「sudo systemctl start mariadb」コマンドを使う
+MariaDBの状態を確認するには、
+「sudo systemctl status mariadb」コマンドを使う
+
+
+
+secret_key_base
+d721498db7c1620ecd66c5db39991743949bb08f755f79c0e91dadddfa611bfc233525e84d39ef9d91da69366e7ff65d1cc2136606439b887eba4da1576131ef
+
+
+プロセスID
+19380
+
+
+
+AWSでデプロイしたサイトのURL
+http://52.195.88.227:3000/
